@@ -1,15 +1,18 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Moon, Sun, Search, Menu, X, Home, User, PenSquare, Users, Settings } from 'lucide-react'
+import { LogOut, Search, Menu, X, Home, User, PenSquare, Users, Settings } from 'lucide-react'
 import { LoginPage } from '../Components/LoginPage'
 import axios from 'axios'
+import { Backdrop, CircularProgress } from '@mui/material'
 
 export default function HomeScreen() {
+  const  api_key =  process.env.REACT_APP_API_KEY
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [loginForm, setLoginForm] = useState(false)
   const [allBlogs, setAllBlogs] = useState([])
+  const [Loading, setLoading] = useState(true)
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen)
@@ -17,10 +20,11 @@ export default function HomeScreen() {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get("https://mernstackblogapp-backend.onrender.com/post/allposts");
+      const response = await axios.get(`${api_key}/post/allposts`);
       const reversedData = response.data.reverse();
       setAllBlogs(reversedData);
       console.log(reversedData);
+      setLoading(false);
     } catch (error) {
       alert("Server Issue");
       localStorage.clear();
@@ -32,6 +36,7 @@ export default function HomeScreen() {
     { icon: User, text: 'Profile' },
     { icon: Users, text: 'All Users' },
     { icon: Settings, text: 'Settings' },
+    { icon:LogOut , text:'Logout'}
   ]
 
   useEffect(() => {
@@ -40,6 +45,12 @@ export default function HomeScreen() {
 
   return (
     <div className="min-h-screen dark:bg-[#111827]">
+      <Backdrop
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={Loading}
+      >
+        <CircularProgress color="secondary" />
+      </Backdrop>
       {loginForm && <LoginPage onClose={() => setLoginForm(false)} />}
       <div className="bg-[#f4f4f4] dark:bg-[#111827] text-gray-900 dark:text-white">
         {/* Header */}
@@ -71,7 +82,11 @@ export default function HomeScreen() {
                   </button>
                 ) : (
                   <button
-                    onClick={() => setLoginForm(true)}
+                    onClick={() => {  
+                      setLoading (true);
+                      setLoginForm(true);
+                      setLoading (false);
+                    }}
                     className="bg-[#6363C2] px-4 py-2 font-semibold rounded-md"
                   >
                     Login
