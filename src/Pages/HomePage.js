@@ -7,7 +7,7 @@ import axios from 'axios'
 import { Backdrop, CircularProgress } from '@mui/material'
 
 export default function HomeScreen() {
-  const  api_key =  process.env.REACT_APP_API_KEY
+  const  api_key =  process.env.REACT_APP_SERVER_API
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [loginForm, setLoginForm] = useState(false)
