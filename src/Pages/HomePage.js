@@ -5,50 +5,56 @@ import { LogOut, Search, Menu, X, Home, User, PenSquare, Users, Settings } from 
 import { LoginPage } from '../Components/LoginPage'
 import axios from 'axios'
 import { Backdrop, CircularProgress } from '@mui/material'
+import PostCard from '../Components/PostCard'
 
 export default function HomeScreen() {
-  const  api_key =  process.env.REACT_APP_SERVER_API
+  const api_key = process.env.REACT_APP_SERVER_API
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [loginForm, setLoginForm] = useState(false)
   const [allBlogs, setAllBlogs] = useState([])
   const [Loading, setLoading] = useState(true)
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen)
-  }
+  const toggleMenu = () => setIsMenuOpen(!isMenuOpen)
 
   const fetchData = async () => {
     try {
-      const response = await axios.get(`${api_key}/post/allposts`);
-      const reversedData = response.data.reverse();
-      setAllBlogs(reversedData);
-      console.log(reversedData);
-      setLoading(false);
+      const response = await axios.get(`${api_key}/post/allposts`)
+      setAllBlogs(response.data.reverse())
+      setLoading(false)
     } catch (error) {
-      alert("Server Issue");
-      localStorage.clear();
+      alert('Server Issue')
+      localStorage.clear()
     }
+  }
+
+  const handleLogOut = () => {
+    localStorage.clear()
+    setIsLoggedIn(false)
+    window.location.reload()
   }
 
   const menuItems = [
     { icon: Home, text: 'Home' },
     { icon: User, text: 'Profile' },
     { icon: Users, text: 'All Users' },
-    { icon: Settings, text: 'Settings' },
-    { icon:LogOut , text:'Logout'}
+    { icon: LogOut, text: 'Logout', onClick: handleLogOut },
   ]
 
   useEffect(() => {
-    fetchData();
+    fetchData()
+    const loggedinUser = localStorage.getItem('user')
+    const expirationTime = localStorage.getItem('expirationTime')
+    if (loggedinUser && expirationTime && new Date().getTime() < expirationTime) {
+      setIsLoggedIn(true)
+    } else {
+      localStorage.clear()
+    }
   }, [])
 
   return (
     <div className="min-h-screen dark:bg-[#111827]">
-      <Backdrop
-        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={Loading}
-      >
+      <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={Loading}>
         <CircularProgress color="secondary" />
       </Backdrop>
       {loginForm && <LoginPage onClose={() => setLoginForm(false)} />}
@@ -58,20 +64,20 @@ export default function HomeScreen() {
           <div className="container mx-auto px-4 py-4">
             <div className="flex justify-between items-center">
               <h1 className="text-2xl font-bold text-[#6363c2]">SAGE-Blogs</h1>
-              {isLoggedIn ? (
+              {isLoggedIn && (
                 <nav className="hidden md:flex space-x-4">
                   {menuItems.map((item, index) => (
-                    <a
+                    <button
                       key={index}
-                      href="#"
+                      onClick={item.onClick}
                       className="flex font-bold items-center space-x-1 text-gray-600 hover:text-[#6363c2] dark:text-gray-300 dark:hover:text-[#6363c2]"
                     >
                       <item.icon className="w-5 h-5" />
                       <span>{item.text}</span>
-                    </a>
+                    </button>
                   ))}
                 </nav>
-              ) : null}
+              )}
               <div className="flex items-center space-x-4">
                 {isLoggedIn ? (
                   <button
@@ -82,10 +88,10 @@ export default function HomeScreen() {
                   </button>
                 ) : (
                   <button
-                    onClick={() => {  
-                      setLoading (true);
-                      setLoginForm(true);
-                      setLoading (false);
+                    onClick={() => {
+                      setLoading(true)
+                      setLoginForm(true)
+                      setLoading(false)
                     }}
                     className="bg-[#6363C2] px-4 py-2 font-semibold rounded-md"
                   >
@@ -99,9 +105,7 @@ export default function HomeScreen() {
 
         {/* Mobile Menu */}
         <div
-          className={`md:hidden fixed inset-0 z-30 bg-gray-900 bg-opacity-50 ${
-            isMenuOpen ? 'block' : 'hidden'
-          }`}
+          className={`md:hidden fixed inset-0 z-30 bg-gray-900 bg-opacity-50 ${isMenuOpen ? 'block' : 'hidden'}`}
           onClick={toggleMenu}
         >
           <div
@@ -111,14 +115,14 @@ export default function HomeScreen() {
             <div className="p-6">
               <nav className="space-y-4">
                 {menuItems.map((item, index) => (
-                  <a
+                  <button
                     key={index}
-                    href="#"
+                    onClick={item.onClick}
                     className="flex items-center space-x-2 text-gray-600 hover:text-[#6363c2] dark:text-gray-300 dark:hover:text-[#6363c2]"
                   >
                     <item.icon className="w-5 h-5" />
                     <span>{item.text}</span>
-                  </a>
+                  </button>
                 ))}
               </nav>
             </div>
@@ -144,18 +148,7 @@ export default function HomeScreen() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {allBlogs.map((post) => (
-              <article
-                key={post.id}
-                className="bg-white dark:bg-[#1f2937] p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 ease-in-out flex flex-col justify-between"
-              >
-                <div>
-                  <h2 className="text-xl font-bold text-[#6363c2] mb-2">{post.heading}</h2>
-                  <p className="text-gray-600 dark:text-gray-300 mb-4">{post.caption}</p>
-                </div>
-                <button className="bg-[#6363c2] hover:bg-[#5252a3] text-white font-semibold py-2 px-4 rounded-md transition duration-300 ease-in-out transform hover:scale-105 self-start">
-                  Read more
-                </button>
-              </article>
+              <PostCard key={post._id} id={post._id} title={post.heading} content={post.caption} />
             ))}
           </div>
         </main>
@@ -168,12 +161,12 @@ export default function HomeScreen() {
         </footer>
 
         {/* New Post Button */}
-        {isLoggedIn ? (
+        {isLoggedIn && (
           <button className="font-semibold fixed right-6 bottom-6 z-50 bg-[#6363c2] hover:bg-[#5252a3] text-white px-4 py-2 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-110 flex items-center space-x-2">
             <PenSquare className="w-5 h-5" />
             <span>New post</span>
           </button>
-        ) : null}
+        )}
       </div>
     </div>
   )

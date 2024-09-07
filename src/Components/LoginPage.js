@@ -1,33 +1,117 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Eye, EyeOff, Mail, Lock, User, X } from 'lucide-react'
+import { Backdrop, CircularProgress } from '@mui/material'
+import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
+
 
 export const LoginPage = ({onClose}) => {
+  const api = process.env.REACT_APP_SERVER_API
+  const navigate = useNavigate()
+  const [name, setname] = useState("")
+  const [email, setemail] = useState("")
+  const [password, setpassword] = useState("")
   const [isLogin, setIsLogin] = useState(true)
+  const [Loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
-  const [isFormOpen, setIsFormOpen] = useState(true)
+
 
   const toggleForm = () => setIsLogin(!isLogin)
   const togglePasswordVisibility = () => setShowPassword(!showPassword)
  
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    if (isLogin) {
-      console.log('Login')
-    } else {
-      console.log('Signup')
+  const LoginUser = async(e) => {
+    e.preventDefault();
+    try {
+      setLoading(true)
+      const loginuser = await axios.post(`${api}/user/login` , {email, password})
+      if(loginuser.status === 200) {
+         const loggingemail = loginuser.data.user._id
+         const logginname = loginuser.data.user.name
+         const expirationTime = new Date().getTime() + 3 * 24 * 60 * 60 * 1000; // 3 days expiration
+         localStorage.setItem('user', logginname);
+         localStorage.setItem('userid', loggingemail);
+         localStorage.setItem('expirationTime', expirationTime);
+         setLoading(false)
+         window.location.reload()
+      } else {
+        alert("Server is offline")
+        setLoading(false)
+      }
+    } catch (error) {
+      setLoading(false)
+      if(error.code === "ERR_NETWORK") {
+        alert("Server is offline")
+      } else if(error.response.status === 402) {
+        alert("Invalid password, try again")
+      } else if(error.response.status === 400) {
+        alert("User not found")
+      } else {
+        alert("Server error, try again later")
+      }
     }
   }
 
+  const handleRegister = async(e) => {
+    e.preventDefault();
+    if (name === "" || email === "" || password === "") {
+      alert("All fields are not filled. Please try again.");
+      return;
+    }
+    
+    setLoading(true);
+    try {
+      const newuser = await axios.post(`${api}/user/register`, { name, email, password })
+      setLoading(false);
+      alert("Created new account");
+      window.location.reload();
+    } catch (error) {
+      setLoading(false)
+      if(error.response && error.response.status === 400){
+        alert("Email is already taken")
+      } else {
+        alert("Server Busy")
+      }
+    }
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    if (isLogin) {
+      LoginUser(e)
+    } else {
+      handleRegister(e)
+    }
+  }
+
+  useEffect(() => {
+    const loggedinUser = localStorage.getItem('user');
+    const expirationTime = localStorage.getItem('expirationTime');
+    if(loggedinUser && expirationTime && new Date().getTime() < expirationTime) {
+      navigate("/")
+      alert("User already loged in")
+      window.location.reload()
+    } else {
+      localStorage.removeItem('user');
+      localStorage.removeItem('userid');
+      localStorage.removeItem('expirationTime');
+    }
+  }, [])
 
   return (
     <div className=' z-50 fixed inset bg-black bg-opacity-30 backdrop-blur-sm w-[100%] h-[100vh] flex items-center justify-center'>
+      <Backdrop
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={Loading}
+      >
+        <CircularProgress color="secondary" />
+      </Backdrop>
       <div className="bg-gray-800 p-8 rounded-lg shadow-xl w-full max-w-md relative">
         {/* Close button */}
         <button
-        onClick={onClose}
+          onClick={onClose}
           className="absolute top-4 right-4 text-white focus:outline-none"
         >
           <X className="h-5 w-5" />
@@ -50,6 +134,8 @@ export const LoginPage = ({onClose}) => {
                   type="text"
                   name="name"
                   id="name"
+                  value={name}
+                  onChange={(e) => setname(e.target.value)}
                   className="bg-gray-700 block w-full pl-10 pr-3 py-2 border border-gray-600 rounded-md leading-5 text-gray-300 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Your name"
                 />
@@ -57,7 +143,7 @@ export const LoginPage = ({onClose}) => {
             </div>
           )}
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-300">
+            <label htmlFor="email"  className="block text-sm font-medium text-gray-300">
               Email
             </label>
             <div className="mt-1 relative rounded-md shadow-sm">
@@ -68,6 +154,8 @@ export const LoginPage = ({onClose}) => {
                 type="email"
                 name="email"
                 id="email"
+                value={email}
+                onChange={(e) =>  setemail(e.target.value.toLowerCase())}
                 className="bg-gray-700 block w-full pl-10 pr-3 py-2 border border-gray-600 rounded-md leading-5 text-gray-300 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="you@example.com"
               />
@@ -85,6 +173,8 @@ export const LoginPage = ({onClose}) => {
                 type={showPassword ? 'text' : 'password'}
                 name="password"
                 id="password"
+                value={password}
+                onChange={(e) =>setpassword(e.target.value)}
                 className="bg-gray-700 block w-full pl-10 pr-10 py-2 border border-gray-600 rounded-md leading-5 text-gray-300 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="••••••••"
               />
