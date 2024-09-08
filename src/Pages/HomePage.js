@@ -1,19 +1,23 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { LogOut, Search, Menu, X, Home, User, PenSquare, Users, Settings } from 'lucide-react'
+import { LogOut, Search, Menu, X, User, PenSquare, Users } from 'lucide-react'
 import { LoginPage } from '../Components/LoginPage'
 import axios from 'axios'
 import { Backdrop, CircularProgress } from '@mui/material'
 import PostCard from '../Components/PostCard'
+import { useNavigate } from 'react-router-dom'
+import AddBlog from '../Components/AddBlog'
 
 export default function HomeScreen() {
+  const navigate = useNavigate()
   const api_key = process.env.REACT_APP_SERVER_API
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [loginForm, setLoginForm] = useState(false)
   const [allBlogs, setAllBlogs] = useState([])
   const [Loading, setLoading] = useState(true)
+  const [addVlog, setaddVlog] = useState(false)
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen)
 
@@ -34,12 +38,17 @@ export default function HomeScreen() {
     window.location.reload()
   }
 
+  const handleProfile = () => {
+    const id = localStorage.getItem('userid')
+    navigate(`/profile/${id}`)
+  }
   const menuItems = [
-    { icon: Home, text: 'Home' },
-    { icon: User, text: 'Profile' },
+    { icon: User, text: 'Profile' , onClick : handleProfile },
     { icon: Users, text: 'All Users' },
     { icon: LogOut, text: 'Logout', onClick: handleLogOut },
   ]
+
+  
 
   useEffect(() => {
     fetchData()
@@ -58,6 +67,7 @@ export default function HomeScreen() {
         <CircularProgress color="secondary" />
       </Backdrop>
       {loginForm && <LoginPage onClose={() => setLoginForm(false)} />}
+      {addVlog && <AddBlog  onClose={() => setaddVlog(false)} />  }
       <div className="bg-[#f4f4f4] dark:bg-[#111827] text-gray-900 dark:text-white">
         {/* Header */}
         <header className="sticky top-0 z-20 bg-white dark:bg-[#111827] shadow-md">
@@ -162,7 +172,7 @@ export default function HomeScreen() {
 
         {/* New Post Button */}
         {isLoggedIn && (
-          <button className="font-semibold fixed right-6 bottom-6 z-50 bg-[#6363c2] hover:bg-[#5252a3] text-white px-4 py-2 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-110 flex items-center space-x-2">
+          <button onClick={() => setaddVlog(true)} className="font-semibold fixed right-6 bottom-6 z-50 bg-[#6363c2] hover:bg-[#5252a3] text-white px-4 py-2 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-110 flex items-center space-x-2">
             <PenSquare className="w-5 h-5" />
             <span>New post</span>
           </button>
