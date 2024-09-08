@@ -146,7 +146,7 @@ export default function HomeScreen() {
 
         {/* Main Content */}
         <main className="container mx-auto px-4 py-8">
-          <div className="mb-8">
+          {/* <div className="mb-8">
             <div className="flex">
               <div className="relative flex-grow">
                 <input
@@ -160,7 +160,7 @@ export default function HomeScreen() {
                 Search
               </button>
             </div>
-          </div>
+          </div> */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {allBlogs.map((post) => (
               <PostCard key={post._id} id={post._id} title={post.heading} content={post.caption} />
