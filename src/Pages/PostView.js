@@ -63,7 +63,7 @@ export const PostView = () => {
           <span className="mr-4">{author}</span>
           <Clock size={16} className="mr-2" />
           <span>
-  {time?.slice(0, 10)} {Number(time?.charAt(12))+5}{time?.slice(13,16)}
+  {time?.slice(0, 10)} {time?.slice(12,16)} (UTC)
 </span>
 
         </div>
