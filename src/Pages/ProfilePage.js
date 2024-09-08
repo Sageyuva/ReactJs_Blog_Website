@@ -26,7 +26,6 @@ export default function Component() {
   const fetchUserData = async() => {
     try {
       const userData = await axios.post(`${api_key}/user/singleuser`, { userId })
-      console.log(userData.data[0])
      setUserProfile(userData.data[0])
       const userPosts = await axios.post(`${api_key}/post/postofuser`, { userId })
       setAllBlogsofuser(userPosts.data)

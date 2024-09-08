@@ -31,7 +31,6 @@ export const PostView = () => {
       }
 
       setLoading(false)
-      console.log(OnBlog)
       } catch (error) {
         alert("Server failed")
         navigate("/")
@@ -45,7 +44,7 @@ export const PostView = () => {
 
 
   return (
-    <div className="min-h-screen bg-[#111827] text-white p-6 flex flex-col">
+    (<div className="min-h-screen bg-[#111827] text-white p-6 flex flex-col">
       <button onClick={() => { navigate(-1);}} className="flex items-center text-blue-400 hover:text-blue-300 transition-colors mb-6">
         <ArrowLeft className="mr-2" size={20} />
         Back to Posts
@@ -60,7 +59,7 @@ export const PostView = () => {
         
         <div className="flex items-center text-gray-400 mb-4">
           <User size={16} className="mr-2" />
-          <span className="mr-4">{author}</span>
+          <span onClick={() => navigate(`/profile/${userId}`)} className="mr-4 cursor-pointer hover:text-[#6363c2]">{author}</span>
           <Clock size={16} className="mr-2" />
           <span>
   {time?.slice(0, 10)} {time?.slice(12,16)} (UTC)
@@ -85,6 +84,6 @@ export const PostView = () => {
         </div>
         }
       </article>
-    </div>
-  )
+    </div>)
+  );
 }
