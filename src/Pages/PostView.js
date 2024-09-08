@@ -5,6 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Backdrop, CircularProgress } from '@mui/material'
 
 export const PostView = () => {
+  const api_key = process.env.REACT_APP_SERVER_API
     const {id} = useParams()
     const [time, settime] = useState("")
     const [heading, setHeading] = useState("")
@@ -18,7 +19,7 @@ export const PostView = () => {
     const fetchBlog = async() => {
         try {
       
-      const blogData = await axios.get(`https://mernstackblogapp-backend.onrender.com/post/onepost/${id}`)
+      const blogData = await axios.get(`${api_key}/post/onepost/${id}`)
       const OnBlog = blogData.data
       setHeading(OnBlog.heading)
       setContent(OnBlog.caption)
@@ -37,6 +38,21 @@ export const PostView = () => {
       }
     }
 
+
+    const handlePostDelete = async() => {
+
+try {
+  setLoading(true)
+  const deletePost = await axios.delete(`${api_key}/post/deletepost/${id}`)
+  alert("post deleted")
+  setLoading(false)
+  navigate("/")
+} catch (error) {
+  alert("server failed")
+  navigate("/")
+}
+
+}
 
     useEffect(()=>{
      fetchBlog()
@@ -73,11 +89,11 @@ export const PostView = () => {
         
         {
           Owner  && <div className="flex justify-end space-x-4">
-          <button className="flex items-center bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition-colors">
+          <button onClick={() => navigate(`/update/${id}`)} className="flex items-center bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition-colors">
             <Edit size={16} className="mr-2" />
             Edit
           </button>
-          <button className="flex items-center bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition-colors">
+          <button onClick={handlePostDelete} className="flex items-center bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition-colors">
             <Trash2 size={16} className="mr-2" />
             Delete
           </button>

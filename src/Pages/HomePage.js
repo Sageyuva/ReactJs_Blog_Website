@@ -42,9 +42,14 @@ export default function HomeScreen() {
     const id = localStorage.getItem('userid')
     navigate(`/profile/${id}`)
   }
+
+  const handleallUsers = () => {
+    navigate('/allusers')
+  }
+
   const menuItems = [
     { icon: User, text: 'Profile' , onClick : handleProfile },
-    { icon: Users, text: 'All Users' },
+    { icon: Users, text: 'All Users' , onClick: handleallUsers},
     { icon: LogOut, text: 'Logout', onClick: handleLogOut },
   ]
 

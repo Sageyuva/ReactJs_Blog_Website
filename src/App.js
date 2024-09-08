@@ -5,6 +5,8 @@ import ProfilePage from './Pages/ProfilePage'
 import { PostView } from './Pages/PostView'
 import ErrorPage from './Pages/ErrorPage'
 import AddBlog from './Components/AddBlog'
+import AllUsers from './Pages/AllUsers'
+import UpdateBlog from './Components/UpdateBlog'
 
 const App = () => {
   return (
@@ -13,6 +15,9 @@ const App = () => {
 <Route path="/profile/:id" element={<ProfilePage />} />
   <Route path='/Post/:id' element={ <PostView/> } />
   <Route path="/add" element={<AddBlog />} />
+  <Route path="/update/:id" element={<UpdateBlog />} />
+  <Route path="/allusers" element={<AllUsers />} />
+  <Route path="/*" element={<ErrorPage />} />
 </Routes>
   )
 }
