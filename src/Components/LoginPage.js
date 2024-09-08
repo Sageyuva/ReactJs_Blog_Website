@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Eye, EyeOff, Mail, Lock, User, X } from 'lucide-react'
+import { Eye, EyeOff, Mail, Lock, User, X, BookText } from 'lucide-react'
 import { Backdrop, CircularProgress } from '@mui/material'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
@@ -11,6 +11,7 @@ export const LoginPage = ({onClose}) => {
   const api = process.env.REACT_APP_SERVER_API
   const navigate = useNavigate()
   const [name, setname] = useState("")
+  const [bio, setbio] = useState("")
   const [email, setemail] = useState("")
   const [password, setpassword] = useState("")
   const [isLogin, setIsLogin] = useState(true)
@@ -63,7 +64,7 @@ export const LoginPage = ({onClose}) => {
     
     setLoading(true);
     try {
-      const newuser = await axios.post(`${api}/user/register`, { name, email, password })
+      const newuser = await axios.post(`${api}/user/register`, { name, email, password ,bio })
       setLoading(false);
       alert("Created new account");
       window.location.reload();
@@ -121,8 +122,9 @@ export const LoginPage = ({onClose}) => {
           {isLogin ? 'Login' : 'Register'}
         </h2>
         <form className="space-y-6" onSubmit={handleSubmit}>
-          {!isLogin && (
-            <div>
+          {!isLogin && 
+           <>
+           <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-300">
                 Name
               </label>
@@ -141,7 +143,28 @@ export const LoginPage = ({onClose}) => {
                 />
               </div>
             </div>
-          )}
+
+            <div>
+              <label htmlFor="name" className="block text-sm font-medium text-gray-300">
+                Bio
+              </label>
+              <div className="mt-1 relative rounded-md shadow-sm">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <BookText className="h-5 w-5 text-gray-400" />
+                </div>
+                <input
+                  type="text"
+                  name="name"
+                  id="name"
+                  value={bio}
+                  onChange={(e) => setbio(e.target.value)}
+                  className="bg-gray-700 block w-full pl-10 pr-3 py-2 border border-gray-600 rounded-md leading-5 text-gray-300 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Bio"
+                />
+              </div>
+            </div>
+           </>
+          }
           <div>
             <label htmlFor="email"  className="block text-sm font-medium text-gray-300">
               Email

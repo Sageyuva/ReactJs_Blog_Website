@@ -69,7 +69,7 @@ export default function Component() {
                 <User size={20} className="mr-3 text-[#6363c2]" />
                 <span className="font-semibold text-lg">Bio</span>
               </div>
-              <p className="text-gray-300 text-sm md:text-base font-semibold">{blogger.bio}</p>
+              <p className="text-gray-300 text-sm md:text-base font-semibold">{userProfile.bio ? userProfile.bio : "Not Available"}</p>
             </div>
 
             <div className="space-y-4 md:space-y-6">
