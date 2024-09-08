@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { Backdrop, CircularProgress } from '@mui/material'
 import { useNavigate, useParams } from 'react-router-dom'
+import UpdateProfile from '../Components/UpdateProfile'
 
 export default function Component() {
   const {id} = useParams()
@@ -15,13 +16,7 @@ export default function Component() {
   const [userProfile, setUserProfile] = useState({})
   const [totalposts , settotalposts] = useState("")
   const [owner , setowner] = useState(false)
-  const blogger = {
-    name: "Jane Doe",
-    totalPosts: 42,
-    joinedDate: "2023-01-15",
-    email: "jane.doe@example.com",
-    bio: "Passionate writer and tech enthusiast. I love to share my thoughts on the latest trends in technology and how they shape our world. When I'm not writing, you can find me exploring new coding projects or enjoying a good book."
-  }
+  const [editProfile , seteditProfile] = useState(false)
 
   const fetchUserData = async() => {
     try {
@@ -47,6 +42,7 @@ export default function Component() {
 
   return (
     <>
+    {editProfile && <UpdateProfile  onClose={ () => seteditProfile(false)}/>}
       <div className="min-h-screen bg-[#111827] flex items-center flex-col gap-3 justify-center p-4">
         <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={loading}>
           <CircularProgress color="secondary" />
@@ -93,7 +89,7 @@ export default function Component() {
             </div>
 
             {
-              owner && <button className="w-full bg-[#6363c2] text-white py-2 px-4 rounded-md hover:bg-opacity-90 transition-colors font-semibold text-lg">
+              owner && <button onClick={() => seteditProfile(true)} className="w-full bg-[#6363c2] text-white py-2 px-4 rounded-md hover:bg-opacity-90 transition-colors font-semibold text-lg">
               Edit Profile
             </button>
             }
