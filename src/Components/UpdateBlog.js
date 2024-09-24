@@ -31,29 +31,34 @@ export default function UpdateBlog() {
     }
 
     const fetchBlogData = async () => {
+        const localUserid = localStorage.getItem('userid');
+        const localUsername = localStorage.getItem('user');
+   
+        setUserid(localUserid);
+        setUsername(localUsername);
+    
         try {
             const thatBlog = await axios.get(`${api_key}/post/onepost/${id}`);
-            console.log(thatBlog.data)
-            if(thatBlog.data.userid === userid){
+            console.log(thatBlog.data);
+    
+            // Compare localUserid with the blog's userid directly
+            if (thatBlog.data.userid === localUserid) {
                 setCaption(thatBlog.data.caption);
                 setHeading(thatBlog.data.heading);
                 setTag(thatBlog.data.tag);
-            }
-            else{
+            } else {
                 alert("You are not the owner of this blog");
-                navigate("/")
+                navigate("/");
             }
-           
         } catch (error) {
             alert("Server is not working");
             navigate("/");
         }
     };
+    
 
     useEffect(() => {
         fetchBlogData();
-        setUserid(localStorage.getItem('userid'));
-        setUsername(localStorage.getItem('user'));
     }, []);
 
     return (
