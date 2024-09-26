@@ -15,7 +15,8 @@ export default function HomeScreen() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [loginForm, setLoginForm] = useState(false)
-  const [allBlogs, setAllBlogs] = useState([])
+  const [allBlogs, setAllBlogs] = useState([]) // This will hold the filtered blogs
+  const [originalBlogs, setOriginalBlogs] = useState([]) // Store unmodified blogs here
   const [Loading, setLoading] = useState(true)
   const [addVlog, setaddVlog] = useState(false)
   const [selectedFilter, setSelectedFilter] = useState('') // Added state for selected filter
@@ -25,7 +26,9 @@ export default function HomeScreen() {
   const fetchData = async () => {
     try {
       const response = await axios.get(`${api_key}/post/allposts`)
-      setAllBlogs(response.data.reverse())
+      const blogs = response.data.reverse()
+      setOriginalBlogs(blogs) // Store the unmodified blog data here
+      setAllBlogs(blogs) // Initialize `allBlogs` with the fetched data
       setLoading(false)
     } catch (error) {
       alert('Server Issue')
@@ -54,44 +57,44 @@ export default function HomeScreen() {
     { icon: LogOut, text: 'Logout', onClick: handleLogOut },
   ]
 
-
-  const filterAll =  () => {
-    fetchData()
+  // Filter logic: always filter based on `originalBlogs` to avoid filtering already filtered data
+  const filterAll = () => {
+    setAllBlogs(originalBlogs)
   }
 
   const filterGeneral = () => {
-    const filtered = allBlogs.filter((blog) => blog.tag === 'general')
+    const filtered = originalBlogs.filter((blog) => blog.tag === 'general')
     setAllBlogs(filtered)
   }
 
   const filterEducation = () => {
-    const filtered = allBlogs.filter((blog) => blog.tag === 'education')
+    const filtered = originalBlogs.filter((blog) => blog.tag === 'education')
     setAllBlogs(filtered)
   }
 
   const filterSports = () => {
-    const filtered = allBlogs.filter((blog) => blog.tag === 'sports')
+    const filtered = originalBlogs.filter((blog) => blog.tag === 'sports')
     setAllBlogs(filtered)
   }
 
   const filterPolitics = () => {
-    const filtered = allBlogs.filter((blog) => blog.tag === 'politics')
+    const filtered = originalBlogs.filter((blog) => blog.tag === 'politics')
     setAllBlogs(filtered)
   }
 
   const filterBusiness = () => {
-    const filtered = allBlogs.filter((blog) => blog.tag === 'business')
+    const filtered = originalBlogs.filter((blog) => blog.tag === 'business')
     setAllBlogs(filtered)
   }
 
   const filterTechnology = () => {
-    const filtered = allBlogs.filter((blog) => blog.tag === 'technology')
+    const filtered = originalBlogs.filter((blog) => blog.tag === 'technology')
     setAllBlogs(filtered)
   }
 
   const filterItems = [
-    { text: 'All', onClick: filterAll }, 
-    { text: 'General', onClick: filterGeneral }, 
+    { text: 'All', onClick: filterAll },
+    { text: 'General', onClick: filterGeneral },
     { text: 'Education', onClick: filterEducation },
     { text: 'Politics', onClick: filterPolitics },
     { text: 'Sport', onClick: filterSports },
@@ -194,8 +197,8 @@ export default function HomeScreen() {
             <button
               key={index}
               onClick={() => {
-                setSelectedFilter(filter.text); // Set the selected filter
-                filter.onClick(); // Call the associated filter function
+                setSelectedFilter(filter.text) // Set the selected filter
+                filter.onClick() // Call the associated filter function
               }}
               className={`rounded-md font-semibold h-[40px]  px-4 py-2 ${
                 selectedFilter === filter.text ? 'bg-[#6363c2]' : 'bg-gray-700'
