@@ -18,6 +18,7 @@ export default function HomeScreen() {
   const [allBlogs, setAllBlogs] = useState([])
   const [Loading, setLoading] = useState(true)
   const [addVlog, setaddVlog] = useState(false)
+  const [selectedFilter, setSelectedFilter] = useState('') // Added state for selected filter
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen)
 
@@ -48,12 +49,55 @@ export default function HomeScreen() {
   }
 
   const menuItems = [
-    { icon: User, text: 'Profile' , onClick : handleProfile },
-    { icon: Users, text: 'All Users' , onClick: handleallUsers},
+    { icon: User, text: 'Profile', onClick: handleProfile },
+    { icon: Users, text: 'All Users', onClick: handleallUsers },
     { icon: LogOut, text: 'Logout', onClick: handleLogOut },
   ]
 
-  
+
+  const filterAll =  () => {
+    fetchData()
+  }
+
+  const filterGeneral = () => {
+    const filtered = allBlogs.filter((blog) => blog.tag === 'general')
+    setAllBlogs(filtered)
+  }
+
+  const filterEducation = () => {
+    const filtered = allBlogs.filter((blog) => blog.tag === 'education')
+    setAllBlogs(filtered)
+  }
+
+  const filterSports = () => {
+    const filtered = allBlogs.filter((blog) => blog.tag === 'sports')
+    setAllBlogs(filtered)
+  }
+
+  const filterPolitics = () => {
+    const filtered = allBlogs.filter((blog) => blog.tag === 'politics')
+    setAllBlogs(filtered)
+  }
+
+  const filterBusiness = () => {
+    const filtered = allBlogs.filter((blog) => blog.tag === 'business')
+    setAllBlogs(filtered)
+  }
+
+  const filterTechnology = () => {
+    const filtered = allBlogs.filter((blog) => blog.tag === 'technology')
+    setAllBlogs(filtered)
+  }
+
+  const filterItems = [
+    { text: 'All', onClick: filterAll }, 
+    { text: 'General', onClick: filterGeneral }, 
+    { text: 'Education', onClick: filterEducation },
+    { text: 'Politics', onClick: filterPolitics },
+    { text: 'Sport', onClick: filterSports },
+    { text: 'Business', onClick: filterBusiness },
+    { text: 'Technology', onClick: filterTechnology },
+  ]
 
   useEffect(() => {
     fetchData()
@@ -72,7 +116,7 @@ export default function HomeScreen() {
         <CircularProgress color="secondary" />
       </Backdrop>
       {loginForm && <LoginPage onClose={() => setLoginForm(false)} />}
-      {addVlog && <AddBlog  onClose={() => setaddVlog(false)} />  }
+      {addVlog && <AddBlog onClose={() => setaddVlog(false)} />}
       <div className="bg-[#f4f4f4] dark:bg-[#111827] text-gray-900 dark:text-white">
         {/* Header */}
         <header className="sticky top-0 z-20 bg-white dark:bg-[#111827] shadow-md">
@@ -144,23 +188,26 @@ export default function HomeScreen() {
           </div>
         </div>
 
+        {/* Filter Items */}
+        <div className="w-[100%] px-3 items-center overflow-y-hidden overflow-x-scroll flex gap-3 h-[60px]">
+          {filterItems.map((filter, index) => (
+            <button
+              key={index}
+              onClick={() => {
+                setSelectedFilter(filter.text); // Set the selected filter
+                filter.onClick(); // Call the associated filter function
+              }}
+              className={`rounded-md font-semibold h-[40px]  px-4 py-2 ${
+                selectedFilter === filter.text ? 'bg-[#6363c2]' : 'bg-gray-700'
+              }`}
+            >
+              {filter.text}
+            </button>
+          ))}
+        </div>
+
         {/* Main Content */}
         <main className="container mx-auto px-4 py-8">
-          {/* <div className="mb-8">
-            <div className="flex">
-              <div className="relative flex-grow">
-                <input
-                  type="text"
-                  placeholder="Search blog posts..."
-                  className="w-full p-2 pl-10 rounded-l-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800"
-                />
-                <Search className="absolute left-3 top-2.5 w-5 h-5 text-gray-400" />
-              </div>
-              <button className="bg-[#6363c2] hover:bg-[#5252a3] text-white font-semibold py-2 px-4 rounded-r-md transition duration-300 ease-in-out">
-                Search
-              </button>
-            </div>
-          </div> */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {allBlogs.map((post) => (
               <PostCard key={post._id} id={post._id} title={post.heading} content={post.caption} />
@@ -177,7 +224,10 @@ export default function HomeScreen() {
 
         {/* New Post Button */}
         {isLoggedIn && (
-          <button onClick={() => setaddVlog(true)} className="font-semibold fixed right-6 bottom-6 z-50 bg-[#6363c2] hover:bg-[#5252a3] text-white px-4 py-2 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-110 flex items-center space-x-2">
+          <button
+            onClick={() => setaddVlog(true)}
+            className="font-semibold fixed right-6 bottom-6 z-50 bg-[#6363c2] hover:bg-[#5252a3] text-white px-4 py-2 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-110 flex items-center space-x-2"
+          >
             <PenSquare className="w-5 h-5" />
             <span>New post</span>
           </button>
