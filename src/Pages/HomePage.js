@@ -20,6 +20,7 @@ export default function HomeScreen() {
   const [Loading, setLoading] = useState(true)
   const [addVlog, setaddVlog] = useState(false)
   const [selectedFilter, setSelectedFilter] = useState('') // Added state for selected filter
+  const [searchInput, setSearchInput] = useState('') // State to hold search input
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen)
 
@@ -90,6 +91,19 @@ export default function HomeScreen() {
   const filterTechnology = () => {
     const filtered = originalBlogs.filter((blog) => blog.tag === 'technology')
     setAllBlogs(filtered)
+  }
+
+  // Function to handle search
+  const handleSearch = () => {
+    if (searchInput.trim() === '') {
+      setAllBlogs(originalBlogs) // If the search input is empty, reset the blogs to original
+    } else {
+      const filtered = originalBlogs.filter((blog) =>
+        blog.heading.toLowerCase().includes(searchInput.toLowerCase()) ||
+        blog.caption.toLowerCase().includes(searchInput.toLowerCase())
+      )
+      setAllBlogs(filtered)
+    }
   }
 
   const filterItems = [
@@ -191,6 +205,20 @@ export default function HomeScreen() {
           </div>
         </div>
 
+        {/* Search Section */}
+        <div className='w-[100%] my-2 px-3 flex gap-3 items-center justify-center'>
+          <input
+            type="text"
+            className='flex-1 bg-gray-700 rounded-md outline-none font-semibold text-white text-xl px-4 py-2'
+            placeholder='Enter text'
+            value={searchInput} // Bind the input field to the state
+            onChange={(e) => setSearchInput(e.target.value)} // Update state on input change
+          />
+          <button onClick={handleSearch} className='bg-[#6363c2] font-semibold text-white rounded-md px-4 py-2 text-xl'>
+            Search
+          </button>
+        </div>
+
         {/* Filter Items */}
         <div className="w-[100%] px-3 items-center overflow-y-hidden overflow-x-scroll flex gap-3 h-[60px]">
           {filterItems.map((filter, index) => (
@@ -213,7 +241,7 @@ export default function HomeScreen() {
         <main className="container mx-auto px-4 py-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {allBlogs.map((post) => (
-              <PostCard key={post._id} id={post._id} title={post.heading} content={post.caption} />
+              <PostCard key={post._id} id={post._id} title={post.heading} content={post.caption} tag={post.tag} />
             ))}
           </div>
         </main>

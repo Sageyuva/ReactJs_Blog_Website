@@ -15,6 +15,7 @@ export const PostView = () => {
     const [Loading, setLoading] = useState(true)
     const [userId, setuserId] = useState("")
     const [Owner, setOwner] = useState(false)
+    const [tag, settag] = useState("")
 
     const fetchBlog = async() => {
         try {
@@ -26,6 +27,7 @@ export const PostView = () => {
       setAuthor(OnBlog.username)
       settime(OnBlog.updatedAt ? OnBlog.updatedAt : OnBlog.createdAt)
       setuserId(OnBlog.userid)
+      settag(OnBlog.tag)
 
       if(OnBlog.userid === localStorage.getItem('userid')) {
         setOwner(true)
@@ -61,6 +63,7 @@ try {
 
   return (
     (<div className="min-h-screen bg-[#111827] text-white p-6 flex flex-col">
+    
       <button onClick={() => { navigate(-1);}} className="flex items-center text-blue-400 hover:text-blue-300 transition-colors mb-6">
         <ArrowLeft className="mr-2" size={20} />
         Back to Posts
@@ -68,12 +71,15 @@ try {
       <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={Loading}>
         <CircularProgress color="secondary" />
       </Backdrop>
-      <article className="bg-gray-800 rounded-lg shadow-lg p-6 mb-6">
+      <article  className="bg-gray-800 relative rounded-lg shadow-lg p-6 mb-6">
+      <h4 className="text-gray-600 absolute -top-1 -right-1  border-2 border-[#6363c2]  w-fit px-4 py-1 rounded-full dark:text-gray-300 mb-4">{tag}</h4>
         <h1 className="text-[#6363c2] text-3xl font-bold mb-4">
           {heading}
         </h1>
         
-        <div className="flex items-center text-gray-400 mb-4">
+        
+        
+        <div  className="flex  items-center text-gray-400 mb-4">
           <User size={16} className="mr-2" />
           <span onClick={() => navigate(`/profile/${userId}`)} className="mr-4 cursor-pointer hover:text-[#6363c2]">{author}</span>
           <Clock size={16} className="mr-2" />
@@ -99,6 +105,7 @@ try {
           </button>
         </div>
         }
+        
       </article>
     </div>)
   );
